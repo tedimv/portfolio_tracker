@@ -1,35 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
+
+import { Sheet, SheetContent, SheetTrigger } from "./components/ui/sheet";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    return (
+        <div className="h-full">
+            <Sheet>
+                <div className="p-3 h-full border-r-2 w-16 bg-red flex flex-col justify-between">
+                    <SheetTrigger className="flex flex-col items-center">
+                        <GiHamburgerMenu color="white" size="28" />
+                    </SheetTrigger>
+                    <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                        <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                </div>
+                <SheetContent side="left" className="p-3 w-72">
+                    <div className="flex flex-col justify-between h-full items-start">
+                        <SheetTrigger className="flex flex-col items-center">
+                            <GiHamburgerMenu color="white" size="28" />
+                        </SheetTrigger>
+                        <div className="p-2 flex flex-row gap-2 rounded-full bg-red w-full border">
+                            <Avatar>
+                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                                <AvatarFallback>CN</AvatarFallback>
+                            </Avatar>
+                            asdasdas
+                        </div>
+                    </div>
+                </SheetContent>
+            </Sheet>
+        </div>
+    );
 }
 
-export default App
+export default App;
