@@ -13,6 +13,7 @@ import UserSettings from "./routes/userSettings";
 import { GiCash } from "react-icons/gi";
 import { cn } from "./lib/utils";
 import Investments from "./routes/investments";
+import ThemeSwitch from './components/ThemeSwitch';
 
 const Container: FC<{ children: ReactElement | ReactElement[]; className?: string }> = ({ children, className }) => {
     return (
@@ -131,6 +132,8 @@ function App() {
                 <Route path="/settings" Component={UserSettings} />
                 <Route path="/investments" Component={Investments} />
             </Routes>
+
+            <ThemeSwitch />
         </div>
     );
 }

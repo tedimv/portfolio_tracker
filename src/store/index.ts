@@ -1,25 +1,9 @@
-import { createSlice, configureStore } from "@reduxjs/toolkit";
+import { configureStore, combineSlices } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
-
-const counterSlice = createSlice({
-    name: "counter",
-    initialState: {
-        count: 0,
-    },
-    reducers: {
-        incremented: (state) => {
-            state.count += 1;
-        },
-        decremented: (state) => {
-            state.count -= 1;
-        },
-    },
-});
-
-export const { incremented, decremented } = counterSlice.actions;
+import { themeSlice } from "./theme";
 
 export const store = configureStore({
-    reducer: counterSlice.reducer,
+    reducer: combineSlices({ theme: themeSlice.reducer }),
 });
 
 type StoreState = ReturnType<typeof store.getState>;
