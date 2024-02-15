@@ -16,7 +16,7 @@ function readCache() {
 
     // Bad cache
     localStorage.removeItem(LsKey);
-    return "light";
+    return "dark";
 }
 
 export const themeSlice = createSlice({
