@@ -1,18 +1,23 @@
-import Highcharts, { Options } from "highcharts";
-import { subYears } from "date-fns/subYears";
+import { useEffect } from "react";
 
 import Layout from "@/components/Layout";
 import LayoutHeader from "@/components/Layout/LayoutHeader";
 import LayoutBody from "@/components/Layout/LayoutBody";
-import { store, useAppSelector } from "@/store";
-import { useEffect, useMemo } from "react";
-import { fetchCryptoInvestments, fetchStocksInvestments } from "@/store/investments";
-import SummaryCards from "./SummaryCards";
+import { store } from "@/store";
+import {
+    fetchCryptoInvestments,
+    fetchGoldInvestments,
+    fetchPropertiesInvestments,
+    fetchStocksInvestments,
+} from "@/store/investments";
+import AssetsDistribution from "./components/AssetsDistribution";
 
 const Investments = () => {
     useEffect(() => {
         store.dispatch(fetchCryptoInvestments());
         store.dispatch(fetchStocksInvestments());
+        store.dispatch(fetchGoldInvestments());
+        store.dispatch(fetchPropertiesInvestments());
     }, []);
 
     // const cryptoChardData: Options | null = useMemo(() => {
@@ -47,12 +52,10 @@ const Investments = () => {
 
     return (
         <Layout>
-            <LayoutHeader title="Investments">
-                <div>Investments</div>
-            </LayoutHeader>
+            <LayoutHeader title="Investments" />
 
             <LayoutBody>
-                <SummaryCards />
+                <AssetsDistribution />
                 {/* <HighchartsReact highcharts={Highcharts} options={cryptoChardData} /> */}
             </LayoutBody>
         </Layout>

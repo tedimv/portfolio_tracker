@@ -1,10 +1,13 @@
 import { GiCash, GiHamburgerMenu } from "react-icons/gi";
 import { Link } from "react-router-dom";
 import { IoSettings } from "react-icons/io5";
+import { Faker, allLocales } from "@faker-js/faker";
 
 import { SheetTrigger } from "../ui/sheet";
 import IconContainer from "./IconContainer";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+
+const f = new Faker({ locale: [allLocales.en_US, allLocales.en] });
 
 const ContentExpanded = () => {
     return (
@@ -42,8 +45,8 @@ const ContentExpanded = () => {
                 </Avatar>
 
                 <div className="flex flex-col">
-                    <h5 className="scroll-m-20 text-md font-semibold tracking-tight">Teodor Dimitrov</h5>
-                    <p className="italic text-md">tdim@protonmail.com</p>
+                    <h5 className="scroll-m-20 text-md font-semibold tracking-tight">{f.person.fullName()}</h5>
+                    <p className="italic text-sm">{f.internet.email()}</p>
                 </div>
             </div>
         </div>
