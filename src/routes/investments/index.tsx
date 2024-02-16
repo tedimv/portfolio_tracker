@@ -1,64 +1,110 @@
-import { useEffect } from "react";
+import { useMemo, createContext } from "react";
+import numeral from "numeral";
 
 import Layout from "@/components/Layout";
 import LayoutHeader from "@/components/Layout/LayoutHeader";
 import LayoutBody from "@/components/Layout/LayoutBody";
-import { store } from "@/store";
-import {
-    fetchCryptoInvestments,
-    fetchGoldInvestments,
-    fetchPropertiesInvestments,
-    fetchStocksInvestments,
-} from "@/store/investments";
+import { useAppSelector } from "@/stores";
+import { FORMAT_AMOUNT } from "@/constants/formats";
 import AssetsDistribution from "./components/AssetsDistribution";
+import AssetsControl from "./components/AssetsControl";
+
+type ComputedAssetValue = { clean: number; formatted: string };
+export const InvestmentsContext = createContext<{
+    totalCryptoValue: ComputedAssetValue;
+    totalStocksValue: ComputedAssetValue;
+    totalGoldValue: ComputedAssetValue;
+    totalPropertiesValue: ComputedAssetValue;
+    totalAssetsValue: ComputedAssetValue;
+}>({
+    totalCryptoValue: { clean: 0, formatted: "$0" },
+    totalStocksValue: { clean: 0, formatted: "$0" },
+    totalGoldValue: { clean: 0, formatted: "$0" },
+    totalPropertiesValue: { clean: 0, formatted: "$0" },
+    totalAssetsValue: { clean: 0, formatted: "$0" },
+});
 
 const Investments = () => {
-    useEffect(() => {
-        store.dispatch(fetchCryptoInvestments());
-        store.dispatch(fetchStocksInvestments());
-        store.dispatch(fetchGoldInvestments());
-        store.dispatch(fetchPropertiesInvestments());
-    }, []);
+    const crypto = useAppSelector((state) => state.investments.crypto);
+    const stocks = useAppSelector((state) => state.investments.stocks);
+    const gold = useAppSelector((state) => state.investments.gold);
+    const properties = useAppSelector((state) => state.investments.property);
 
-    // const cryptoChardData: Options | null = useMemo(() => {
-    //     const chartOptions: Options = {
-    //         title: {
-    //             text: "",
-    //         },
-    //         loading: crypto.loading || !crypto.marketPrices.length,
-    //         xAxis: {
-    //             type: "datetime",
-    //             tickLength: 1,
-    //         },
-    //         series: crypto.marketPrices.map((blockchain) => {
-    //             const data = blockchain.seriesPrice.map((dataPoint) => ({
-    //                 y: Number(dataPoint.toFixed(6)),
-    //             }));
+    const totalCryptoValue = useMemo(() => {
+        let total = 0;
 
-    //             return {
-    //                 data,
-    //                 type: "line",
-    //                 name: `${blockchain.name}/USD`,
-    //                 pointStart: subYears(new Date(), 1).valueOf(),
-    //                 pointIntervalUnit: "day",
-    //                 pointInterval: 1,
-    //             };
-    //         }),
-    //     };
+        crypto.walletBalance.forEach(({ transactions, name }) => {
+            const blockchainTrends = crypto.marketPrices.find((blockchain) => blockchain.name === name);
+            const latestPrice = blockchainTrends?.seriesPrice.at(-1);
+            total += (transactions.at(-1)?.balance ?? 0) * (latestPrice?.value ?? 0);
+        });
 
-    //     return chartOptions;
-    // }, [crypto]);
-    // console.log(cryptoChardData);
+        return { clean: total, formatted: numeral(total).format(FORMAT_AMOUNT) };
+    }, [crypto.marketPrices, crypto.walletBalance]);
+
+    const totalStocksValue = useMemo(() => {
+        let total = 0;
+
+        stocks.walletBalance.forEach(({ amount, name }) => {
+            const stocksTrends = stocks.marketPrices.find((stock) => stock.name === name);
+            const latestPrice = stocksTrends?.seriesPrice.at(-1);
+            total += amount * (latestPrice?.value ?? 0);
+        });
+
+        return { clean: total, formatted: numeral(total).format(FORMAT_AMOUNT) };
+    }, [stocks.marketPrices, stocks.walletBalance]);
+
+    const totalGoldValue = useMemo(() => {
+        let total = 0;
+
+        gold.walletBalance.forEach(({ amount, name }) => {
+            const goldTrends = gold.marketPrices.find((goldType) => goldType.name === name);
+            const latestPrice = goldTrends?.seriesPrice.at(-1);
+            total += amount * (latestPrice?.value ?? 0);
+        });
+
+        return { clean: total, formatted: numeral(total).format(FORMAT_AMOUNT) };
+    }, [gold.marketPrices, gold.walletBalance]);
+
+    const totalPropertiesValue = useMemo(() => {
+        let total = 0;
+
+        properties.walletBalance.forEach(({ address, city }) => {
+            const propertiesTrends = properties.marketPrices.find(
+                (property) => property.city === city && property.address === address
+            );
+            const latestPrice = propertiesTrends?.seriesPrice.at(-1);
+            total += 1 * (latestPrice?.value ?? 0);
+        });
+
+        return { clean: total, formatted: numeral(total).format(FORMAT_AMOUNT) };
+    }, [properties.marketPrices, properties.walletBalance]);
+
+    const totalAssetsValue = useMemo(() => {
+        const total =
+            totalCryptoValue.clean + totalStocksValue.clean + totalGoldValue.clean + totalPropertiesValue.clean;
+        return { clean: total, formatted: numeral(total).format(FORMAT_AMOUNT) };
+    }, [totalCryptoValue.clean, totalGoldValue.clean, totalPropertiesValue.clean, totalStocksValue.clean]);
 
     return (
-        <Layout>
-            <LayoutHeader title="Investments" />
+        <InvestmentsContext.Provider
+            value={{
+                totalCryptoValue,
+                totalStocksValue,
+                totalGoldValue,
+                totalPropertiesValue,
+                totalAssetsValue,
+            }}
+        >
+            <Layout>
+                <LayoutHeader title="Investments" />
 
-            <LayoutBody>
-                <AssetsDistribution />
-                {/* <HighchartsReact highcharts={Highcharts} options={cryptoChardData} /> */}
-            </LayoutBody>
-        </Layout>
+                <LayoutBody>
+                    <AssetsDistribution />
+                    <AssetsControl />
+                </LayoutBody>
+            </Layout>
+        </InvestmentsContext.Provider>
     );
 };
 

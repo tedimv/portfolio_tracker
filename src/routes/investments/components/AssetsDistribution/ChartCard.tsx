@@ -1,17 +1,16 @@
-import { FC, useMemo } from "react";
+import { FC, useContext, useMemo } from "react";
 import { Options } from "highcharts";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { InvestmentsContext } from "../..";
 
-const ChartCard: FC<{
-    totalCryptoValue: number;
-    totalStocksValue: number;
-    totalGoldValue: number;
-    totalPropertiesValue: number;
-    totalAssetsValue: number;
-}> = ({ totalAssetsValue, totalCryptoValue, totalGoldValue, totalPropertiesValue, totalStocksValue }) => {
+const ChartCard: FC = () => {
+    const { totalAssetsValue, totalCryptoValue, totalGoldValue, totalPropertiesValue, totalStocksValue } = useContext(
+        InvestmentsContext
+    );
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const options: Options = useMemo(() => {
@@ -40,7 +39,7 @@ const ChartCard: FC<{
             },
             legend: {
                 labelFormatter: function (this: { name: string; y: number }) {
-                    const percent = Math.round((this.y / (totalAssetsValue || 1)) * 100);
+                    const percent = Math.round((this.y / (totalAssetsValue.clean || 1)) * 100);
                     return this.name + ` <b>${percent}%<b>`;
                 },
             },
@@ -53,19 +52,19 @@ const ChartCard: FC<{
                     data: [
                         {
                             name: "Crypto",
-                            y: Number(totalCryptoValue.toFixed(2)),
+                            y: Number(totalCryptoValue.clean.toFixed(2)),
                         },
                         {
                             name: "Stock",
-                            y: Number(totalStocksValue.toFixed(2)),
+                            y: Number(totalStocksValue.clean.toFixed(2)),
                         },
                         {
                             name: "Gold",
-                            y: Number(totalGoldValue.toFixed(2)),
+                            y: Number(totalGoldValue.clean.toFixed(2)),
                         },
                         {
                             name: "Properties",
-                            y: Number(totalPropertiesValue.toFixed(2)),
+                            y: Number(totalPropertiesValue.clean.toFixed(2)),
                         },
                     ],
                 },
@@ -76,9 +75,9 @@ const ChartCard: FC<{
     }, [totalAssetsValue, totalCryptoValue, totalGoldValue, totalPropertiesValue, totalStocksValue]);
 
     return (
-        <div className="flex flex-row justify-between gap-3">
-            <Card className="flex flex-col pt-6 flex-grow min-h-[20rem]">
-                <CardContent>
+        <div>
+            <Card className="flex flex-col pt-6 flex-grow w-full">
+                <CardContent className="max-w-full">
                     <HighchartsReact highcharts={Highcharts} options={options} />
                 </CardContent>
             </Card>

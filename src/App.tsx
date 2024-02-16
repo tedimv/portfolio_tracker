@@ -2,10 +2,26 @@ import { Routes, Route } from "react-router";
 
 import UserSettings from "./routes/userSettings";
 import Investments from "./routes/investments";
-import ThemeSwitch from "./components/ThemeSwitch";
 import Sidebar from "./components/Sidebar";
+import { useEffect } from "react";
+import { store } from "./stores";
+
+import { Toaster } from "./components/ui/sonner";
+import {
+    fetchCryptoInvestments,
+    fetchGoldInvestments,
+    fetchPropertiesInvestments,
+    fetchStocksInvestments,
+} from "./stores/investments/thunks";
 
 function App() {
+    useEffect(() => {
+        store.dispatch(fetchCryptoInvestments());
+        store.dispatch(fetchStocksInvestments());
+        store.dispatch(fetchGoldInvestments());
+        store.dispatch(fetchPropertiesInvestments());
+    }, []);
+
     return (
         <div className="h-full flex flex-row">
             <Sidebar />
@@ -14,7 +30,8 @@ function App() {
                 <Route path="/" Component={Investments} />
                 <Route path="/settings" Component={UserSettings} />
             </Routes>
-            <ThemeSwitch />
+
+            <Toaster />
         </div>
     );
 }

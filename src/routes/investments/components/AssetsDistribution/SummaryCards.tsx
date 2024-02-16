@@ -1,43 +1,43 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FC } from "react";
+import { FC, useContext } from "react";
 
-const SummaryCards: FC<{
-    totalCryptoValue: string;
-    totalStocksValue: string;
-    totalGoldValue: string;
-    totalPropertiesValue: string;
-    totalAssetsValue: string;
-}> = ({ totalAssetsValue, totalCryptoValue, totalGoldValue, totalPropertiesValue, totalStocksValue }) => {
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { InvestmentsContext } from "../..";
+
+const SummaryCards: FC = () => {
+    const { totalAssetsValue, totalCryptoValue, totalGoldValue, totalPropertiesValue, totalStocksValue } = useContext(
+        InvestmentsContext
+    );
+
     return (
-        <div className="flex flex-row w-full gap-3 justify-around">
+        <div className="flex flex-row w-full gap-3 justify-around overflow-auto">
             <Card className="flex-grow basis-1">
                 <CardHeader>
-                    <CardTitle>{totalCryptoValue}</CardTitle>
+                    <CardTitle>{totalCryptoValue.formatted}</CardTitle>
                     <CardDescription>Crypto</CardDescription>
                 </CardHeader>
             </Card>
             <Card className="flex-grow basis-1">
                 <CardHeader>
-                    <CardTitle>{totalStocksValue}</CardTitle>
+                    <CardTitle>{totalStocksValue.formatted}</CardTitle>
                     <CardDescription>Stocks</CardDescription>
                 </CardHeader>
             </Card>
             <Card className="flex-grow basis-1">
                 <CardHeader>
-                    <CardTitle>{totalGoldValue}</CardTitle>
+                    <CardTitle>{totalGoldValue.formatted}</CardTitle>
                     <CardDescription>Gold</CardDescription>
                 </CardHeader>
             </Card>
             <Card className="flex-grow basis-1">
                 <CardHeader>
-                    <CardTitle>{totalPropertiesValue}</CardTitle>
+                    <CardTitle>{totalPropertiesValue.formatted}</CardTitle>
                     <CardDescription>Properties</CardDescription>
                 </CardHeader>
             </Card>
 
             <Card className="flex-grow basis-1">
                 <CardHeader className="bg-accent">
-                    <CardTitle>{totalAssetsValue}</CardTitle>
+                    <CardTitle>{totalAssetsValue.formatted}</CardTitle>
                     <CardDescription>Total assets value</CardDescription>
                 </CardHeader>
             </Card>
