@@ -21,18 +21,17 @@ const ContentCollapsed = () => {
                 </IconContainer>
             </Link>
 
-            <Link to="/settings">
-                <IconContainer>
-                    <IoSettings color="input" size="28" />
-                </IconContainer>
-            </Link>
-
-            <div className="p-1 h-[56px] mt-auto">
+            <div className="p-1 h-[56px]">
                 <Avatar style={{ borderRadius: "calc(9999px - 0.5rem)" }}>
                     <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                     <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
             </div>
+            <Link to="/settings" className="mt-auto">
+                <IconContainer>
+                    <IoSettings color="input" size="28" />
+                </IconContainer>
+            </Link>
         </div>
     );
 };
