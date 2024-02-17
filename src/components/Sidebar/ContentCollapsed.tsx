@@ -4,7 +4,6 @@ import { IoSettings } from "react-icons/io5";
 
 import { SheetTrigger } from "../ui/sheet";
 import IconContainer from "./IconContainer";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const ContentCollapsed = () => {
     return (
@@ -21,12 +20,6 @@ const ContentCollapsed = () => {
                 </IconContainer>
             </Link>
 
-            <div className="p-1 h-[56px]">
-                <Avatar style={{ borderRadius: "calc(9999px - 0.5rem)" }}>
-                    <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                    <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-            </div>
             <Link to="/settings" className="mt-auto">
                 <IconContainer>
                     <IoSettings color="input" size="28" />

@@ -12,7 +12,7 @@ const ThemeSwitch = () => {
     const isLight = theme === "light";
     
     return (
-        <div className="absolute top-8 right-10">
+        <div className="absolute bottom-[-1.3rem] right-4">
             <div className="relative" style={{ cursor: "pointer !important" }} onClick={() => dispatch(toggleTheme())}>
                 <Switch checked={theme === "light"} />
                 

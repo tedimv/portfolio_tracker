@@ -1,14 +1,13 @@
 import numeral from "numeral";
-import { Options } from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import Highcharts from "highcharts";
+import Highcharts, { Options } from "highcharts";
 import { formatDate } from "date-fns/format";
 import { subYears } from "date-fns/subYears";
+import { parse } from "date-fns/parse";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FORMAT_AMOUNT, FORMAT_DATE } from "@/constants/formats";
 import { useAppSelector } from "@/stores";
-import { parse } from "date-fns/parse";
 
 const TabContentCrypto = () => {
     const crypto = useAppSelector((state) => state.investments.crypto);
