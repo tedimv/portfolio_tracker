@@ -1,8 +1,10 @@
 import { parse } from "date-fns/parse";
+import { format } from "date-fns/format";
 import { generateRandomInt } from "./generateRandomInt";
 import { subYears } from "date-fns/subYears";
 import { addDays } from "date-fns/addDays";
 import { FORMAT_DATE } from "@/constants/formats";
+
 import { MarketTrendPoint } from "../investments/dtos/base";
 
 export type VariationRange = {
@@ -34,7 +36,7 @@ export function generateMarketTrend(
         const movement = Math.random() > 0.5 ? 1 + intervalVariation / 100 : 1 - intervalVariation / 100;
         const newResult = prev * movement;
         const date = addDays(dateStep, 1);
-        results.push({ date, value: newResult });
+        results.push({ date: format(date, FORMAT_DATE), value: newResult });
         dateStep = date;
         prev = newResult;
     }

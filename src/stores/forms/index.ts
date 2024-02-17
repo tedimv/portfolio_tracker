@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+
 import { FieldKey, FormId, FormMappable, FormSchema, StoreFormsState } from "./utilTypes";
 
 type ActionRegisterForm<T extends FormMappable> = {
@@ -11,9 +12,9 @@ type ActionUpdateFieldError = {
     payload: {
         form: FormId;
         field: FieldKey;
-        error: Error | null;
+        error: string | null;
     };
-    };
+};
 
 type ActionUpdateFieldValue = {
     payload: {
@@ -29,6 +30,8 @@ export const formsSlice = createSlice({
     reducers: {
         registerForm: function <T extends FormMappable>(state: StoreFormsState, action: ActionRegisterForm<T>) {
             const { schema } = action.payload;
+            console.log({ schema });
+
             state[schema.formId] = schema as FormSchema<FormMappable>;
         },
         updateFieldValue: (state, action: ActionUpdateFieldValue) => {
@@ -37,6 +40,7 @@ export const formsSlice = createSlice({
         },
         updateFieldError: (state, action: ActionUpdateFieldError) => {
             const { form, field, error } = action.payload;
+            console.log("NEW ERROR ", error);
             state[form].fields[field].error = error;
         },
     },
@@ -44,8 +48,12 @@ export const formsSlice = createSlice({
 
 export const { registerForm, updateFieldValue, updateFieldError } = formsSlice.actions;
 
-export function wrappedRegisterForm<T extends FormMappable>(action: ActionRegisterForm<T>["payload"]) {
+export function useFormSchema<T extends FormMappable>(action: ActionRegisterForm<T>["payload"]) {
     // The generics narrow down the types but when we pass them
     // to the actions they expect "unknown" generic values so we need to de-de-mystify the types
     return registerForm(action as { schema: FormSchema<FormMappable> });
+}
+
+export enum FormName {
+    UpdateUserInfo = "UpdateUserInfo",
 }

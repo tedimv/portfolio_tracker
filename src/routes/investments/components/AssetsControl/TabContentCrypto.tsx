@@ -8,6 +8,7 @@ import { subYears } from "date-fns/subYears";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FORMAT_AMOUNT, FORMAT_DATE } from "@/constants/formats";
 import { useAppSelector } from "@/stores";
+import { parse } from "date-fns/parse";
 
 const TabContentCrypto = () => {
     const crypto = useAppSelector((state) => state.investments.crypto);
@@ -57,7 +58,7 @@ const TabContentCrypto = () => {
                             type: "line",
                             data:
                                 marketPriceData?.seriesPrice?.map?.((item) => ({
-                                    x: item.date.valueOf(),
+                                    x: parse(item.date, FORMAT_DATE, new Date()).valueOf(),
                                     y: item.value,
                                 })) ?? [],
                             yAxis: 0,
@@ -93,7 +94,7 @@ const TabContentCrypto = () => {
                         yAxis: 1,
                         data: structuredClone(
                             asset.transactions.map((tr) => ({
-                                x: tr.date.valueOf(),
+                                x: parse(tr.date, FORMAT_DATE, new Date()).valueOf(),
                                 y: tr.balance,
                             }))
                         ),

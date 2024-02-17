@@ -12,8 +12,10 @@ export type WalletAsset = {
     closed: boolean;
 };
 
+
+type DateISO = string;
 export type Transaction = {
-    date: Date;
+    date: DateISO;
     amount: number;
     balance: number;
     open: boolean;
@@ -21,5 +23,5 @@ export type Transaction = {
 
 export type MarketTrendPoint = {
     value: number;
-    date: Date;
+    date: DateISO;
 };

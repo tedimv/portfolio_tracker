@@ -2,6 +2,7 @@ import { isAfter } from "date-fns/isAfter";
 import { addDays } from "date-fns/addDays";
 import { subYears } from "date-fns/subYears";
 import { parse } from "date-fns/parse";
+import { format } from "date-fns/format";
 
 import { FAKER } from "@/constants/faker";
 import { Transaction } from "../investments/dtos/base";
@@ -32,7 +33,7 @@ export function generateTransactions(
         balance += transactionAmount;
 
         results.push({
-            date: newDate,
+            date: format(newDate, FORMAT_DATE),
             balance,
             amount: transactionAmount,
             open: transactionAmount > 0,

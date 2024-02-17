@@ -1,60 +1,80 @@
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-
 import Layout from "@/components/Layout";
 import LayoutBody from "@/components/Layout/LayoutBody";
 import LayoutHeader from "@/components/Layout/LayoutHeader";
-import { wrappedRegisterForm } from "@/stores/forms";
+import { FormName } from "@/stores/forms";
 import { FieldType } from "@/stores/forms/utilTypes";
-import { validateLength } from "@/stores/forms/validations";
+import { Card, CardContent } from "@/components/ui/card";
+import useFormSchema from "@/components/forms/useFormSchema";
+import AppForm from "@/components/forms/Form";
+import TextField from "@/components/forms/TextField";
 
 const UserSettings = () => {
-    const dispatch = useDispatch();
-    // const auth = useAppSelector(state => state.auth)
-
-    useEffect(() => {
-        // The generic FormMappable expands into concrete types with safety preserved for Field specific props and validations
-        // Probably can be expanded a ton more, but it will become harder to maintain
-        dispatch(
-            wrappedRegisterForm<{
-                fields: {
-                    firstName: {
-                        type: FieldType.Text;
-                    };
-                    familyName: {
-                        type: FieldType.Text;
-                    };
-                };
-            }>({
-                schema: {
-                    formId: "updateUserSettings",
-                    fields: {
-                        firstName: {
-                            value: "",
-                            validations: {
-                                validateLength: { min: 3, errorMessage: "Minimum of 3 characters" },
-                            },
-                        },
-                        familyName: {
-                            value: "",
-                            validations: {
-                                validateLength: { min: 6, errorMessage: "Minimum of 6 characters required" },
-                            },
-                        },
-                    },
+    // const auth = useAppSelector((state) => state);
+    const schema = useFormSchema<{
+        /**
+         * Passing a generic "T extends FormMappable" allows us to expand T into a type-safe schema type for the fn argument
+         * e.g: Add a new field to the T and TS will flag the input if it's incorrect or missing
+         *      Since validations are fully typed as well we can't missuse them if they expect a specific input type
+         */
+        fields: {
+            firstName: {
+                type: FieldType.Text; // change to FieldType.Number
+            };
+            lastName: {
+                type: FieldType.Text;
+            };
+            email: {
+                type: FieldType.Text;
+            };
+        };
+    }>({
+        formId: FormName.UpdateUserInfo,
+        fields: {
+            firstName: {
+                value: "",
+                meta: { label: "First name" },
+                validations: {
+                    validateRequired: {},
+                    validateLength: { min: 2, errorMessage: "Minimum 2 characters required" },
                 },
-            })
+            },
+            lastName: {
+                value: "",
+                meta: { label: "Last name" },
+                validations: {
+                    validateRequired: {},
+                    validateEmail: {},
+                    validateLength: { min: 2, errorMessage: "Minimum 2 characters required" },
+                },
+            },
+            email: {
+                meta: { label: "Email" },
+                validations: {
+                    validateRequired: {},
+                    validateEmail: {},
+                },
+            },
+        },
+    });
 
-            // })
-        );
-    }, [dispatch]);
+    console.log(schema);
 
     return (
         <Layout>
             <LayoutHeader title="Settings" />
 
             <LayoutBody>
-                <div>123</div>
+                <Card>
+                    <CardContent>
+                        <AppForm schema={schema}>
+                            <TextField formId={schema.formId} fieldKey="firstName" />
+                            {/* <TextField formId={schema.formId} fieldKey="lastName" /> */}
+                        </AppForm>
+                        {/* <TextField formId={FormName.UpdateUserInfo} fieldKey="firstName" />
+                        <TextField formId={FormName.UpdateUserInfo} fieldKey="lastName" />
+                        <TextField formId={FormName.UpdateUserInfo} fieldKey="email" /> */}
+                    </CardContent>
+                </Card>
             </LayoutBody>
         </Layout>
     );

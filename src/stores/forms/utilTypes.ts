@@ -6,8 +6,8 @@ export type FieldKey = string;
 export type StoreFormsState = Record<FormId, FormSchema<FormMappable>>;
 
 export type FormField<TValue = unknown, TMeta = unknown> = {
-    value: TValue;
-    error?: Error | null;
+    value?: TValue;
+    error?: string | null;
     meta?: TMeta; // things like "label","isMultiselect", etc
     /***
      * All validations are curried.
@@ -15,7 +15,7 @@ export type FormField<TValue = unknown, TMeta = unknown> = {
      * JSON data in redux and deserialize it in each Field
      * @throws ErrorValidation
      */
-    validations: Partial<ValidationsMap>;
+    validations: Partial<ValidationsMap<TValue>>;
 };
 
 export type MetaText = { label?: string; format?: string };
