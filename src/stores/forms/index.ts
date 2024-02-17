@@ -8,6 +8,11 @@ type ActionRegisterForm<T extends FormMappable> = {
     };
 };
 
+type ActionUnregisterForm = {
+    payload: {
+        formId: FormId;
+    };
+};
 type ActionUpdateFieldError = {
     payload: {
         form: FormId;
@@ -30,9 +35,10 @@ export const formsSlice = createSlice({
     reducers: {
         registerForm: function <T extends FormMappable>(state: StoreFormsState, action: ActionRegisterForm<T>) {
             const { schema } = action.payload;
-            console.log({ schema });
-
             state[schema.formId] = schema as FormSchema<FormMappable>;
+        },
+        unregisterForm: (state: StoreFormsState, action: ActionUnregisterForm) => {
+            delete state[action.payload.formId];
         },
         updateFieldValue: (state, action: ActionUpdateFieldValue) => {
             const { form, field, value } = action.payload;
@@ -40,13 +46,12 @@ export const formsSlice = createSlice({
         },
         updateFieldError: (state, action: ActionUpdateFieldError) => {
             const { form, field, error } = action.payload;
-            console.log("NEW ERROR ", error);
             state[form].fields[field].error = error;
         },
     },
 });
 
-export const { registerForm, updateFieldValue, updateFieldError } = formsSlice.actions;
+export const { registerForm, unregisterForm, updateFieldValue, updateFieldError } = formsSlice.actions;
 
 export function useFormSchema<T extends FormMappable>(action: ActionRegisterForm<T>["payload"]) {
     // The generics narrow down the types but when we pass them

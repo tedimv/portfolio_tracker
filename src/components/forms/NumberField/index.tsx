@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/stores";
 import { updateFieldError, updateFieldValue } from "@/stores/forms";
 import { ErrorValidation, glueValidations } from "@/stores/forms/validations";
-import { FormField, MetaText } from "@/stores/forms/utilTypes";
+import { FormField, MetaNumber } from "@/stores/forms/utilTypes";
 import { Input } from "@/components/ui/input";
 
 type FieldProps = {
@@ -11,23 +11,25 @@ type FieldProps = {
     fieldKey: string;
 };
 
-function TextField({ formId = "", fieldKey }: FieldProps) {
+function NumberField({ formId = "", fieldKey }: FieldProps) {
     const dispatch = useDispatch();
-    const { value = "", validations, error, meta } = useAppSelector(
-        (state) => state.forms[formId].fields[fieldKey] as FormField<string, MetaText>
+    const { value, validations, error, meta } = useAppSelector(
+        (state) => state.forms[formId].fields[fieldKey] as FormField<number, MetaNumber>
     );
 
     async function handleUpdateAndValidate(e: React.ChangeEvent<HTMLInputElement>) {
+        const val = e.target.value;
+        const sanitized = val.includes("-") ? "-" + val.replace(/-/g, "") : val;
         dispatch(
             updateFieldValue({
                 form: formId,
                 field: fieldKey,
-                value: e.target.value,
+                value: Number(sanitized),
             })
         );
 
         try {
-            await glueValidations<string>(validations, e.target.value);
+            await glueValidations<number>(validations, Number(e.target.value));
             if (error)
                 dispatch(
                     updateFieldError({
@@ -54,7 +56,7 @@ function TextField({ formId = "", fieldKey }: FieldProps) {
             {meta?.label && (
                 <p className="p-0 m-0">
                     {meta?.label}
-                    {validations["validateRequired"] && <span className='text-red-600'>*</span>}
+                    {validations["validateRequired"] && <span className="text-red-600">*</span>}
                 </p>
             )}
             <Input type="text" value={value} onChange={handleUpdateAndValidate} />
@@ -63,4 +65,4 @@ function TextField({ formId = "", fieldKey }: FieldProps) {
     );
 }
 
-export default TextField;
+export default NumberField;

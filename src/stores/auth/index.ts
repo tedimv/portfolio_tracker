@@ -1,7 +1,9 @@
 import { FAKER } from "@/constants/faker";
 import { createSlice } from "@reduxjs/toolkit";
+import { putUpdateUserInfo } from "./thunks";
 
-type Auth = {
+export type Auth = {
+    loading: boolean;
     user: {
         firstName: string;
         lastName: string;
@@ -16,6 +18,7 @@ type ActionUpdateUserData = {
 export const authSlice = createSlice({
     name: "auth",
     initialState: {
+        loading: false,
         user: {
             firstName: FAKER.person.firstName(),
             lastName: FAKER.person.lastName(),
@@ -26,6 +29,18 @@ export const authSlice = createSlice({
         updateUserData: (state, action: ActionUpdateUserData) => {
             state.user = action.payload;
         },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(putUpdateUserInfo.pending, (state) => {
+            state.loading = true;
+        });
+        builder.addCase(putUpdateUserInfo.fulfilled, (state, action) => {
+            state.user = action.payload;
+            state.loading = false;
+        });
+        builder.addCase(putUpdateUserInfo.rejected, (state) => {
+            state.loading = false;
+        });
     },
 });
 

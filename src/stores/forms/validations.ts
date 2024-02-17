@@ -37,10 +37,8 @@ export const appValidations = {
     validateRequired,
 };
 
-export async function glueValidation<TValue>(vMap: ValidationsMap<TValue>, value: TValue) {
+export async function glueValidations<TValue>(vMap: ValidationsMap<TValue>, value: TValue) {
     for await (const [fnName, fnArgs] of Object.entries(vMap)) {
-        console.log({ fnName, fnArgs, value });
-
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         let errOrPromise = appValidations[fnName](fnArgs)(value);
