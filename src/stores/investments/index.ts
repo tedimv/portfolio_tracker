@@ -125,8 +125,6 @@ export const investmentsSlice = createSlice({
         builder.addCase(fetchStocksInvestments.pending, (state) => mutatePending(state.stocks));
         builder.addCase(fetchStocksInvestments.rejected, (state) => mutateRejected(state.stocks));
         builder.addCase(fetchStocksInvestments.fulfilled, (state, { payload }) => {
-            console.log(payload);
-
             mutateFulfilled(state.stocks, payload);
         });
 
@@ -136,9 +134,13 @@ export const investmentsSlice = createSlice({
 
         builder.addCase(fetchPropertiesInvestments.pending, (state) => mutatePending(state.property));
         builder.addCase(fetchPropertiesInvestments.rejected, (state) => mutateRejected(state.property));
-        builder.addCase(fetchPropertiesInvestments.fulfilled, (state, { payload }) =>
-            mutateFulfilled(state.property, payload)
-        );
+        builder.addCase(fetchPropertiesInvestments.fulfilled, (state, { payload }) => {
+            state.property.marketPrices = payload.marketPrices;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            state.property.walletBalance = payload.walletBalance;
+            state.property.loading = false;
+        });
 
         builder.addCase(thunkBuyAsset.fulfilled, (state, action) => {
             const { amount, assetType, predicate } = action.payload;

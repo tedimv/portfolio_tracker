@@ -15,6 +15,7 @@ import { useState } from "react";
 import { OptionsCrypto } from "@/stores/investments/thunks";
 import ModalBuyAsset from "../ModalBuyAsset";
 import { ModalOption } from "@/stores/investments/typesTroublesome";
+import ModalSellAsset from "../ModalSellAsset";
 
 const TabContentStocks = () => {
     const stocks = useAppSelector((state) => state.investments.stocks);
@@ -128,7 +129,7 @@ const TabContentStocks = () => {
                                 <CardDescription className="flex-grow">
                                     <p className="leading-7 [&:not(:first-child)]:mt-6">Wallet Amount</p>
                                     <h4 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                                        {balance.toFixed(4)} = {formattedValue}
+                                        {balance} = {formattedValue}
                                     </h4>
                                 </CardDescription>
                             </div>
@@ -137,7 +138,7 @@ const TabContentStocks = () => {
                                 <h4 className="font-mono relative" style={{ fontWeight: 500 }}>
                                     STATUS |
                                 </h4>
-                                {asset.transactions.at(-1)?.amount ?? 0 > 0 ? (
+                                {asset.transactions.at(-1)?.balance ?? 0 > 0 ? (
                                     <span className="flex justify-center items-center px-3 py-1 font-medium rounded-none bg-blue-700 text-white">
                                         Open
                                     </span>
@@ -161,7 +162,8 @@ const TabContentStocks = () => {
 
                                 <Button
                                     className="rounded-l-none bg-red-600 flex flex-row items-center gap-2 px-5"
-                                    onClick={() => setShowModal(`buy-${asset.name as OptionsCrypto}`)}
+                                    onClick={() => setShowModal(`sell-${asset.name as OptionsCrypto}`)}
+                                    disabled={!asset.transactions.at(-1)?.balance}
                                 >
                                     <LuMinusCircle />
                                     <span>Sell</span>
@@ -175,7 +177,18 @@ const TabContentStocks = () => {
                         {showModal === `buy-${asset.name}` && (
                             <ModalBuyAsset
                                 assetType="stocks"
-                                assetName={asset.name}
+                                assetName={asset.name.toUpperCase()}
+                                findAssetPredicate={(_asset) => _asset.name === asset.name}
+                                onClose={() => setShowModal(null)}
+                            />
+                        )}
+
+                        {showModal === `sell-${asset.name}` && (
+                            <ModalSellAsset
+                                assetType="stocks"
+                                amountMeta={{ label: "Amount" }}
+                                maxSell={asset.transactions.at(-1)?.balance ?? 0}
+                                assetName={asset.name.toUpperCase()}
                                 findAssetPredicate={(_asset) => _asset.name === asset.name}
                                 onClose={() => setShowModal(null)}
                             />

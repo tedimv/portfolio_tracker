@@ -24,6 +24,11 @@ import mockCryptoData from "./mock/crypto.json";
 import mockStocksData from "./mock/stocks.json";
 import mockGoldData from "./mock/gold.json";
 import mockPropertiesData from "./mock/properties.json";
+// import { MarketProperty, WalletProperty } from "./dtos/property";
+// import { generateRandomInt } from "../fakeDataGenerators/generateRandomInt";
+// import { generateMarketTrend } from "../fakeDataGenerators/generateMarketTrend";
+// import { FAKER } from "@/constants/faker";
+// import { generateTransactions } from "../fakeDataGenerators/generateTransaction";
 
 export type OptionsCrypto = "BTC" | "ETH" | "ADA" | "DOGE" | "SOL";
 
@@ -255,6 +260,11 @@ export const fetchPropertiesInvestments = createAsyncThunk("investments/properti
     //     address: property.address,
     //     city: property.city,
     //     closed: false,
+    //     transactions: generateTransactions(
+    //         1,
+    //         () => 1,
+    //         (balance) => FAKER.number.float({ min: 3, max: balance })
+    //     ),
     // }));
 
     // await new Promise((res) => setTimeout(res, 1200));

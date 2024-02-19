@@ -17,19 +17,20 @@ import ModalBuyAsset from "../ModalBuyAsset";
 import { ModalOption } from "@/stores/investments/typesTroublesome";
 import ModalSellAsset from "../ModalSellAsset";
 
-const TabContentCrypto = () => {
-    const crypto = useAppSelector((state) => state.investments.crypto);
+const TabContentGold = () => {
+    const gold = useAppSelector((state) => state.investments.gold);
     const [showModal, setShowModal] = useState<ModalOption | null>(null);
 
     const startDate = subYears(new Date(), 1);
     const endDate = new Date();
     const formattedStartDate = formatDate(startDate, FORMAT_DATE);
     const formattedEndDate = formatDate(endDate, FORMAT_DATE);
+    console.log({ gold });
 
     return (
         <div className="flex flex-row flex-wrap gap-3">
-            {crypto.walletBalance.map((asset, i) => {
-                const marketPriceData = crypto.marketPrices.find((marketAsset) => marketAsset.name === asset.name) ?? {
+            {gold.walletBalance.map((asset, i) => {
+                const marketPriceData = gold.marketPrices.find((marketAsset) => marketAsset.name === asset.name) ?? {
                     seriesPrice: [],
                 };
                 const marketPriceCurrent = marketPriceData?.seriesPrice?.at(-1)?.value ?? 0;
@@ -108,15 +109,13 @@ const TabContentCrypto = () => {
                         ),
                     });
                 }
-
                 const sellPrecision = asset.transactions.at(-1)?.balance ?? 1 % 1;
 
                 return (
                     <Card key={`crypto-row-${i}`} className="flex-grow basis-1 min-w-[40%]">
                         <CardHeader className="relative">
                             <CardTitle className="flex flex-row gap-4">
-                                <div className="flex flex-row align-bottom gap-4">
-                                    <img src={asset.iconUrl} style={{ height: "40px", width: "40px" }} />
+                                <div className="flex flex-row align-bottom">
                                     {asset.name}
                                 </div>
                             </CardTitle>
@@ -131,7 +130,7 @@ const TabContentCrypto = () => {
                                 <CardDescription className="flex-grow">
                                     <p className="leading-7 [&:not(:first-child)]:mt-6">Wallet Amount</p>
                                     <h4 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                                        {balance.toFixed(4)} = {formattedValue}
+                                        {balance} = {formattedValue}
                                     </h4>
                                 </CardDescription>
                             </div>
@@ -178,7 +177,7 @@ const TabContentCrypto = () => {
 
                         {showModal === `buy-${asset.name}` && (
                             <ModalBuyAsset
-                                assetType="crypto"
+                                assetType="gold"
                                 assetName={asset.name.toUpperCase()}
                                 findAssetPredicate={(_asset) => _asset.name === asset.name}
                                 onClose={() => setShowModal(null)}
@@ -187,7 +186,7 @@ const TabContentCrypto = () => {
 
                         {showModal === `sell-${asset.name}` && (
                             <ModalSellAsset
-                                assetType="crypto"
+                                assetType="gold"
                                 amountMeta={{ float: { precison: sellPrecision }, label: "Amount" }}
                                 maxSell={asset.transactions.at(-1)?.balance ?? 0}
                                 assetName={asset.name.toUpperCase()}
@@ -202,4 +201,4 @@ const TabContentCrypto = () => {
     );
 };
 
-export default TabContentCrypto;
+export default TabContentGold;

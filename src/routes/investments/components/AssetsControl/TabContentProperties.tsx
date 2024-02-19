@@ -17,8 +17,8 @@ import ModalBuyAsset from "../ModalBuyAsset";
 import { ModalOption } from "@/stores/investments/typesTroublesome";
 import ModalSellAsset from "../ModalSellAsset";
 
-const TabContentCrypto = () => {
-    const crypto = useAppSelector((state) => state.investments.crypto);
+const TabContentProperties = () => {
+    const properties = useAppSelector((state) => state.investments.property);
     const [showModal, setShowModal] = useState<ModalOption | null>(null);
 
     const startDate = subYears(new Date(), 1);
@@ -28,13 +28,15 @@ const TabContentCrypto = () => {
 
     return (
         <div className="flex flex-row flex-wrap gap-3">
-            {crypto.walletBalance.map((asset, i) => {
-                const marketPriceData = crypto.marketPrices.find((marketAsset) => marketAsset.name === asset.name) ?? {
+            {properties.walletBalance.map((asset, i) => {
+                const marketPriceData = properties.marketPrices.find(
+                    (marketAsset) => marketAsset.city === asset.city && marketAsset.address === asset.address
+                ) ?? {
                     seriesPrice: [],
                 };
                 const marketPriceCurrent = marketPriceData?.seriesPrice?.at(-1)?.value ?? 0;
 
-                const balance = asset.transactions.at(-1)?.balance ?? 0;
+                const balance = asset.transactions.at(-1)?.balance ? 1 : 0;
                 const total = balance * marketPriceCurrent;
                 const formattedMarketPrice = numeral(marketPriceCurrent).format(FORMAT_AMOUNT);
                 const formattedValue = numeral(total).format(FORMAT_AMOUNT);
@@ -62,7 +64,7 @@ const TabContentCrypto = () => {
                             pointInterval: 1,
                             pointStart: startDate.valueOf(),
                             pointIntervalUnit: "day",
-                            name: asset.name,
+                            name: `${asset.city} \\ ${asset.address}`,
                             type: "line",
                             data:
                                 marketPriceData?.seriesPrice?.map?.((item) => ({
@@ -109,16 +111,13 @@ const TabContentCrypto = () => {
                     });
                 }
 
-                const sellPrecision = asset.transactions.at(-1)?.balance ?? 1 % 1;
+                const id = `${asset.city} \\ ${asset.address}`;
 
                 return (
                     <Card key={`crypto-row-${i}`} className="flex-grow basis-1 min-w-[40%]">
                         <CardHeader className="relative">
                             <CardTitle className="flex flex-row gap-4">
-                                <div className="flex flex-row align-bottom gap-4">
-                                    <img src={asset.iconUrl} style={{ height: "40px", width: "40px" }} />
-                                    {asset.name}
-                                </div>
+                                <div className="flex flex-row align-bottom gap-4">{id}</div>
                             </CardTitle>
                             <div className="flex flex-row gap-3">
                                 <CardDescription className="flex-grow">
@@ -131,7 +130,7 @@ const TabContentCrypto = () => {
                                 <CardDescription className="flex-grow">
                                     <p className="leading-7 [&:not(:first-child)]:mt-6">Wallet Amount</p>
                                     <h4 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                                        {balance.toFixed(4)} = {formattedValue}
+                                        {balance} = {formattedValue}
                                     </h4>
                                 </CardDescription>
                             </div>
@@ -156,7 +155,8 @@ const TabContentCrypto = () => {
                             <div className="flex flex-row pl-1 mb-4 divide-x-2">
                                 <Button
                                     className="rounded-r-none bg-green-600 flex flex-row items-center gap-2 px-5"
-                                    onClick={() => setShowModal(`buy-${asset.name as OptionsCrypto}`)}
+                                    onClick={() => setShowModal(`buy-${id as OptionsCrypto}`)}
+                                    disabled={(asset.transactions.at(-1)?.balance ?? 0) > 0}
                                 >
                                     <IoAddCircleOutline />
                                     <span>Buy</span>
@@ -164,7 +164,7 @@ const TabContentCrypto = () => {
 
                                 <Button
                                     className="rounded-l-none bg-red-600 flex flex-row items-center gap-2 px-5"
-                                    onClick={() => setShowModal(`sell-${asset.name as OptionsCrypto}`)}
+                                    onClick={() => setShowModal(`sell-${id as OptionsCrypto}`)}
                                     disabled={!asset.transactions.at(-1)?.balance}
                                 >
                                     <LuMinusCircle />
@@ -176,22 +176,26 @@ const TabContentCrypto = () => {
                             )}
                         </CardContent>
 
-                        {showModal === `buy-${asset.name}` && (
+                        {showModal === `buy-${id}` && (
                             <ModalBuyAsset
-                                assetType="crypto"
-                                assetName={asset.name.toUpperCase()}
-                                findAssetPredicate={(_asset) => _asset.name === asset.name}
+                                assetType="property"
+                                assetName={id}
+                                findAssetPredicate={(_asset) =>
+                                    _asset.city === asset.city && asset.address === asset.address
+                                }
                                 onClose={() => setShowModal(null)}
                             />
                         )}
 
-                        {showModal === `sell-${asset.name}` && (
+                        {showModal === `sell-${id}` && (
                             <ModalSellAsset
-                                assetType="crypto"
-                                amountMeta={{ float: { precison: sellPrecision }, label: "Amount" }}
+                                assetType="property"
+                                amountMeta={{ label: "Amount" }}
                                 maxSell={asset.transactions.at(-1)?.balance ?? 0}
-                                assetName={asset.name.toUpperCase()}
-                                findAssetPredicate={(_asset) => _asset.name === asset.name}
+                                assetName={id.toUpperCase()}
+                                findAssetPredicate={(_asset) =>
+                                    _asset.city === asset.city && asset.address === asset.address
+                                }
                                 onClose={() => setShowModal(null)}
                             />
                         )}
@@ -202,4 +206,4 @@ const TabContentCrypto = () => {
     );
 };
 
-export default TabContentCrypto;
+export default TabContentProperties;

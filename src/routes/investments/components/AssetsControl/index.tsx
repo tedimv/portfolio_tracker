@@ -2,6 +2,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TabContentCrypto from "./TabContentCrypto";
 import TabContentStocks from "./TabContentStocks";
+import TabContentGold from "./TabContentGold";
+import TabContentProperties from "./TabContentProperties";
 
 const AssetsControl = () => {
     return (
@@ -21,6 +23,14 @@ const AssetsControl = () => {
 
                     <TabsContent value="stocks">
                         <TabContentStocks />
+                    </TabsContent>
+
+                    <TabsContent value="gold">
+                        <TabContentGold />
+                    </TabsContent>
+
+                    <TabsContent value="properties">
+                        <TabContentProperties />
                     </TabsContent>
                 </Tabs>
             </CardContent>
