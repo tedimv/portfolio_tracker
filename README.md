@@ -3,7 +3,7 @@
 Install dependencies:
 ```
   pnpm install
-``
+```
 
 Run dev server:
 ```
