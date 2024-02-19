@@ -13,7 +13,6 @@ import { thunkBuyAsset } from "@/stores/investments/thunks";
 
 type ModalBuyAssetProps<TAssetType extends KeyofStoreAssets> = {
     assetType: TAssetType;
-    // #interesting
     findAssetPredicate: AssetPredicate<TAssetType>;
     onClose: () => void;
     assetName: string;
