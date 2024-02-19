@@ -51,7 +51,7 @@ export type StoreAssetGroup<TMarketDto = MarketAsset, TWalletDto = WalletAsset> 
 export const initState: {
     crypto: StoreAssetGroup<MarketCryptoAsset, WalletCryptoAsset>;
     stocks: StoreAssetGroup;
-    gold: StoreAssetGroup;
+    rareMetals: StoreAssetGroup;
     property: StoreAssetGroup<MarketProperty, WalletProperty>;
 } = {
     crypto: {
@@ -64,7 +64,7 @@ export const initState: {
         marketPrices: [],
         loading: false,
     },
-    gold: {
+    rareMetals: {
         walletBalance: [],
         marketPrices: [],
         loading: false,
@@ -128,9 +128,11 @@ export const investmentsSlice = createSlice({
             mutateFulfilled(state.stocks, payload);
         });
 
-        builder.addCase(fetchGoldInvestments.pending, (state) => mutatePending(state.gold));
-        builder.addCase(fetchGoldInvestments.rejected, (state) => mutateRejected(state.gold));
-        builder.addCase(fetchGoldInvestments.fulfilled, (state, { payload }) => mutateFulfilled(state.gold, payload));
+        builder.addCase(fetchGoldInvestments.pending, (state) => mutatePending(state.rareMetals));
+        builder.addCase(fetchGoldInvestments.rejected, (state) => mutateRejected(state.rareMetals));
+        builder.addCase(fetchGoldInvestments.fulfilled, (state, { payload }) =>
+            mutateFulfilled(state.rareMetals, payload)
+        );
 
         builder.addCase(fetchPropertiesInvestments.pending, (state) => mutatePending(state.property));
         builder.addCase(fetchPropertiesInvestments.rejected, (state) => mutateRejected(state.property));

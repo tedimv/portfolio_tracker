@@ -17,20 +17,21 @@ import ModalBuyAsset from "../ModalBuyAsset";
 import { ModalOption } from "@/stores/investments/typesTroublesome";
 import ModalSellAsset from "../ModalSellAsset";
 
-const TabContentGold = () => {
-    const gold = useAppSelector((state) => state.investments.gold);
+const TabContentRareMetals = () => {
+    const rareMetals = useAppSelector((state) => state.investments.rareMetals);
     const [showModal, setShowModal] = useState<ModalOption | null>(null);
 
     const startDate = subYears(new Date(), 1);
     const endDate = new Date();
     const formattedStartDate = formatDate(startDate, FORMAT_DATE);
     const formattedEndDate = formatDate(endDate, FORMAT_DATE);
-    console.log({ gold });
 
     return (
         <div className="flex flex-row flex-wrap gap-3">
-            {gold.walletBalance.map((asset, i) => {
-                const marketPriceData = gold.marketPrices.find((marketAsset) => marketAsset.name === asset.name) ?? {
+            {rareMetals.walletBalance.map((asset, i) => {
+                const marketPriceData = rareMetals.marketPrices.find(
+                    (marketAsset) => marketAsset.name === asset.name
+                ) ?? {
                     seriesPrice: [],
                 };
                 const marketPriceCurrent = marketPriceData?.seriesPrice?.at(-1)?.value ?? 0;
@@ -115,9 +116,7 @@ const TabContentGold = () => {
                     <Card key={`crypto-row-${i}`} className="flex-grow basis-1 min-w-[40%]">
                         <CardHeader className="relative">
                             <CardTitle className="flex flex-row gap-4">
-                                <div className="flex flex-row align-bottom">
-                                    {asset.name}
-                                </div>
+                                <div className="flex flex-row align-bottom">{asset.name}</div>
                             </CardTitle>
                             <div className="flex flex-row gap-3">
                                 <CardDescription className="flex-grow">
@@ -177,7 +176,7 @@ const TabContentGold = () => {
 
                         {showModal === `buy-${asset.name}` && (
                             <ModalBuyAsset
-                                assetType="gold"
+                                assetType="rareMetals"
                                 assetName={asset.name.toUpperCase()}
                                 findAssetPredicate={(_asset) => _asset.name === asset.name}
                                 onClose={() => setShowModal(null)}
@@ -186,7 +185,7 @@ const TabContentGold = () => {
 
                         {showModal === `sell-${asset.name}` && (
                             <ModalSellAsset
-                                assetType="gold"
+                                assetType="rareMetals"
                                 amountMeta={{ float: { precison: sellPrecision }, label: "Amount" }}
                                 maxSell={asset.transactions.at(-1)?.balance ?? 0}
                                 assetName={asset.name.toUpperCase()}
@@ -201,4 +200,4 @@ const TabContentGold = () => {
     );
 };
 
-export default TabContentGold;
+export default TabContentRareMetals;

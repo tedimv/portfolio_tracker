@@ -27,7 +27,7 @@ export const InvestmentsContext = createContext<{
 const Investments = () => {
     const crypto = useAppSelector((state) => state.investments.crypto);
     const stocks = useAppSelector((state) => state.investments.stocks);
-    const gold = useAppSelector((state) => state.investments.gold);
+    const gold = useAppSelector((state) => state.investments.rareMetals);
     const properties = useAppSelector((state) => state.investments.property);
 
     const totalCryptoValue = useMemo(() => {
