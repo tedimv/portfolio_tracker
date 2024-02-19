@@ -53,12 +53,8 @@ export const formsSlice = createSlice({
 
 export const { registerForm, unregisterForm, updateFieldValue, updateFieldError } = formsSlice.actions;
 
-export function useFormSchema<T extends FormMappable>(action: ActionRegisterForm<T>["payload"]) {
-    // The generics narrow down the types but when we pass them
-    // to the actions they expect "unknown" generic values so we need to de-de-mystify the types
-    return registerForm(action as { schema: FormSchema<FormMappable> });
-}
-
 export enum FormName {
     UpdateUserInfo = "UpdateUserInfo",
+    BuyAsset = "BuyAsset",
+    SellAsset = "SellAsset",
 }

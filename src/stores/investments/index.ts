@@ -8,9 +8,14 @@ import {
     fetchGoldInvestments,
     fetchPropertiesInvestments,
     fetchStocksInvestments,
+    thunkBuyAsset,
+    thunkSellAsset,
 } from "./thunks";
 import { MarketCryptoAsset, WalletCryptoAsset } from "./dtos/crypto";
 import { MarketProperty, WalletProperty } from "./dtos/property";
+import { AssetPredicate, KeyofStoreAssets } from "../forms/utilTypes";
+import { formatDate } from "date-fns/format";
+import { FORMAT_DATE } from "@/constants/formats";
 
 /**
  * Prices at the time of developing
@@ -30,13 +35,20 @@ import { MarketProperty, WalletProperty } from "./dtos/property";
  * Gold - $2,003.92 / oz
  */
 
-type StoreAssetGroup<TMarketDto = MarketAsset, TWalletDto = WalletAsset> = {
+type ActionBuyAsset<TAssetType extends KeyofStoreAssets> = {
+    payload: {
+        assetType: TAssetType;
+        assetPredicate: AssetPredicate<TAssetType>;
+    };
+};
+
+export type StoreAssetGroup<TMarketDto = MarketAsset, TWalletDto = WalletAsset> = {
     marketPrices: TMarketDto[];
     walletBalance: TWalletDto[];
     loading: boolean;
 };
 
-const initState: {
+export const initState: {
     crypto: StoreAssetGroup<MarketCryptoAsset, WalletCryptoAsset>;
     stocks: StoreAssetGroup;
     gold: StoreAssetGroup;
@@ -88,10 +100,19 @@ export const investmentsSlice = createSlice({
         closeCryptoInvestment: function (state, action: { payload: string }) {
             state.crypto.walletBalance.find((asset) => {
                 if (asset.name === action.payload) {
-                    // asset.closed = true;
                     toast.success(`Asset ${asset.name} closed successfully!`);
                 }
             });
+        },
+        buyAsset: function <TAssetType extends KeyofStoreAssets>(
+            state: typeof initState,
+            action: ActionBuyAsset<TAssetType>
+        ) {
+            const { assetPredicate, assetType } = action.payload;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const assetIndex = state[assetType].walletBalance.findIndex(assetPredicate);
+            console.log({ assetIndex });
         },
     },
     extraReducers: (builder) => {
@@ -103,9 +124,11 @@ export const investmentsSlice = createSlice({
 
         builder.addCase(fetchStocksInvestments.pending, (state) => mutatePending(state.stocks));
         builder.addCase(fetchStocksInvestments.rejected, (state) => mutateRejected(state.stocks));
-        builder.addCase(fetchStocksInvestments.fulfilled, (state, { payload }) =>
-            mutateFulfilled(state.stocks, payload)
-        );
+        builder.addCase(fetchStocksInvestments.fulfilled, (state, { payload }) => {
+            console.log(payload);
+
+            mutateFulfilled(state.stocks, payload);
+        });
 
         builder.addCase(fetchGoldInvestments.pending, (state) => mutatePending(state.gold));
         builder.addCase(fetchGoldInvestments.rejected, (state) => mutateRejected(state.gold));
@@ -116,7 +139,43 @@ export const investmentsSlice = createSlice({
         builder.addCase(fetchPropertiesInvestments.fulfilled, (state, { payload }) =>
             mutateFulfilled(state.property, payload)
         );
+
+        builder.addCase(thunkBuyAsset.fulfilled, (state, action) => {
+            const { amount, assetType, predicate } = action.payload;
+            const found = state[assetType].walletBalance.find(predicate);
+
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const newBalance = found.transactions[found.transactions.length - 1]?.balance + amount;
+
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            found.transactions.push({
+                amount,
+                balance: newBalance,
+                date: formatDate(new Date(), FORMAT_DATE),
+                open: true,
+            });
+        });
+
+        builder.addCase(thunkSellAsset.fulfilled, (state, action) => {
+            const { amount, assetType, predicate } = action.payload;
+            const found = state[assetType].walletBalance.find(predicate);
+
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const newBalance = found.transactions[found.transactions.length - 1]?.balance - amount;
+
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            found.transactions.push({
+                amount,
+                balance: newBalance,
+                date: formatDate(new Date(), FORMAT_DATE),
+                open: true,
+            });
+        });
     },
 });
 
-export const { closeCryptoInvestment } = investmentsSlice.actions;
+export const { closeCryptoInvestment, buyAsset } = investmentsSlice.actions;

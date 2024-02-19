@@ -19,12 +19,21 @@ function NumberField({ formId = "", fieldKey }: FieldProps) {
 
     async function handleUpdateAndValidate(e: React.ChangeEvent<HTMLInputElement>) {
         const val = e.target.value;
-        const sanitized = val.includes("-") ? "-" + val.replace(/-/g, "") : val;
+        const sanitizedNegative = val.includes("-") ? "-" + val.replace(/-/g, "") : val;
+
+        // This is a very messy solution and should have some tests since there are many little gotchas that are not inherintly obvious
+        // let sanitizedFloat = sanitizedNegative.replace(/\./g, "");
+        const segments = sanitizedNegative.split(".");
+        let sanitizedFloat = segments[0];
+        if (meta?.float) {
+            sanitizedFloat += segments[1] ? `.${segments[1].slice(0, meta.float.precison)}` : "";
+        }
+
         dispatch(
             updateFieldValue({
                 form: formId,
                 field: fieldKey,
-                value: Number(sanitized),
+                value: Number(sanitizedFloat),
             })
         );
 
@@ -51,6 +60,7 @@ function NumberField({ formId = "", fieldKey }: FieldProps) {
         }
     }
 
+    // This is a very messy solution and should have some tests since there are many little gotchas that are not inherintly obvious
     return (
         <div className="flex flex-col gap-1">
             {meta?.label && (
@@ -59,7 +69,7 @@ function NumberField({ formId = "", fieldKey }: FieldProps) {
                     {validations["validateRequired"] && <span className="text-red-600">*</span>}
                 </p>
             )}
-            <Input type="text" value={value} onChange={handleUpdateAndValidate} />
+            <Input type="number" value={value} onChange={handleUpdateAndValidate} />
             {error && <div className="font-light text-red-600">{error}</div>}
         </div>
     );

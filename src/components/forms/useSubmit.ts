@@ -3,17 +3,16 @@ import { useDispatch } from "react-redux";
 import { NavigateFunction, useNavigate } from "react-router";
 
 import { useAppSelector } from "@/stores";
-import { updateFieldError } from "@/stores/forms";
+import { unregisterForm, updateFieldError } from "@/stores/forms";
 import { ExtractSchema, FormId, FormMappable, FormSchema } from "@/stores/forms/utilTypes";
 import { ErrorValidation, glueValidations } from "@/stores/forms/validations";
 import { Dispatch } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 
-class ErrorNetwork extends Error {}
-
 type InjectedUtils = { dispatch: Dispatch; navigator: NavigateFunction; notify: typeof toast };
 export type ReValidateFormArgs<T extends FormMappable> = {
     formId: FormId;
+    // #interesting - specifically how "true" affects this generic's usage in onSubmit
     submit(schema: FormSchema<T, true>, utils: InjectedUtils): Promise<void>;
 };
 
@@ -46,17 +45,20 @@ function useSubmitForm<T extends FormSchema<FormMappable>>({ formId, submit }: R
         }
 
         try {
-            if (Math.random() > 0.7) throw new ErrorNetwork("Contact your admin");
             if (hasErrors) throw new ErrorValidation("Please check all form fields and submit again");
             // Simulate delay
             await new Promise((res) => {
-                setTimeout(res, 3000);
+                setTimeout(res, 1500);
             });
             await submit(formSchema as FormSchema<ExtractSchema<T>, true>, { navigator, dispatch, notify: toast });
+            // # needs-improvement
+            dispatch(unregisterForm({ formId }));
         } catch (error) {
-            if (error instanceof ErrorNetwork) toast.error(`NETWORK_ERROR: ${error.message}`);
             if (error instanceof ErrorValidation) toast.error(error.message);
-            else toast.error("Something went wrong");
+            else {
+                console.error(error);
+                toast.error("Something went wrong. Contact your admin.");
+            }
         }
 
         setLoading(false);

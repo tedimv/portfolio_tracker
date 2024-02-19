@@ -4,13 +4,22 @@ import Highcharts, { Options } from "highcharts";
 import { formatDate } from "date-fns/format";
 import { subYears } from "date-fns/subYears";
 import { parse } from "date-fns/parse";
+import { IoAddCircleOutline } from "react-icons/io5";
+import { LuMinusCircle } from "react-icons/lu";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FORMAT_AMOUNT, FORMAT_DATE } from "@/constants/formats";
 import { useAppSelector } from "@/stores";
+import Button from "@/components/ui/button";
+import { useState } from "react";
+import { OptionsCrypto } from "@/stores/investments/thunks";
+import ModalBuyAsset from "../ModalBuyAsset";
+import { ModalOption } from "@/stores/investments/typesTroublesome";
+import ModalSellAsset from "../ModalSellAsset";
 
 const TabContentCrypto = () => {
     const crypto = useAppSelector((state) => state.investments.crypto);
+    const [showModal, setShowModal] = useState<ModalOption | null>(null);
 
     const startDate = subYears(new Date(), 1);
     const endDate = new Date();
@@ -100,6 +109,8 @@ const TabContentCrypto = () => {
                     });
                 }
 
+                const sellPrecision = asset.transactions.at(-1)?.balance ?? 1 % 1;
+
                 return (
                     <Card key={`crypto-row-${i}`} className="flex-grow basis-1 min-w-[40%]">
                         <CardHeader className="relative">
@@ -124,13 +135,66 @@ const TabContentCrypto = () => {
                                     </h4>
                                 </CardDescription>
                             </div>
+
+                            <div className="absolute top-5 right-8 flex flex-row items-center gap-3">
+                                <h4 className="font-mono relative" style={{ fontWeight: 500 }}>
+                                    STATUS |
+                                </h4>
+                                {asset.transactions.at(-1)?.amount ?? 0 > 0 ? (
+                                    <span className="flex justify-center items-center px-3 py-1 font-medium rounded-none bg-blue-700 text-white">
+                                        Open
+                                    </span>
+                                ) : (
+                                    <span className="flex justify-center items-center px-3 py-1 font-medium rounded-none bg-amber-700 text-white">
+                                        Closed
+                                    </span>
+                                )}
+                            </div>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="relative">
                             <CardDescription className="mb-3">Price movement</CardDescription>
+                            <div className="flex flex-row pl-1 mb-4 divide-x-2">
+                                <Button
+                                    className="rounded-r-none bg-green-600 flex flex-row items-center gap-2 px-5"
+                                    onClick={() => setShowModal(`buy-${asset.name as OptionsCrypto}`)}
+                                >
+                                    <IoAddCircleOutline />
+                                    <span>Buy</span>
+                                </Button>
+
+                                <Button
+                                    className="rounded-l-none bg-red-600 flex flex-row items-center gap-2 px-5"
+                                    onClick={() => setShowModal(`sell-${asset.name as OptionsCrypto}`)}
+                                    disabled={!asset.transactions.at(-1)?.balance}
+                                >
+                                    <LuMinusCircle />
+                                    <span>Sell</span>
+                                </Button>
+                            </div>
                             {marketPriceData?.seriesPrice?.length && (
                                 <HighchartsReact highcharts={Highcharts} options={priceMovement} />
                             )}
                         </CardContent>
+
+                        {showModal === `buy-${asset.name}` && (
+                            <ModalBuyAsset
+                                assetType="crypto"
+                                assetName={asset.name.toUpperCase()}
+                                findAssetPredicate={(_asset) => _asset.name === asset.name}
+                                onClose={() => setShowModal(null)}
+                            />
+                        )}
+
+                        {showModal === `sell-${asset.name}` && (
+                            <ModalSellAsset
+                                assetType="crypto"
+                                amountMeta={{ float: { precison: sellPrecision }, label: "Amount" }}
+                                maxSell={asset.transactions.at(-1)?.balance ?? 0}
+                                assetName={asset.name.toUpperCase()}
+                                findAssetPredicate={(_asset) => _asset.name === asset.name}
+                                onClose={() => setShowModal(null)}
+                            />
+                        )}
                     </Card>
                 );
             })}

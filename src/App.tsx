@@ -13,7 +13,7 @@ import {
     fetchPropertiesInvestments,
     fetchStocksInvestments,
 } from "./stores/investments/thunks";
-import FloatingUserInfo from './components/FloatingUserInfo';
+import FloatingUserInfo from "./components/FloatingUserInfo";
 
 function App() {
     useEffect(() => {
@@ -26,13 +26,13 @@ function App() {
     return (
         <div className="h-full flex flex-row">
             <Sidebar />
-            <FloatingUserInfo    />
 
             <Routes>
                 <Route path="/" Component={Investments} />
                 <Route path="/settings" Component={UserSettings} />
             </Routes>
 
+            <FloatingUserInfo />
             <Toaster />
         </div>
     );

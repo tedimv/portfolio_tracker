@@ -1,3 +1,5 @@
+import { StoreAssetGroup, initState } from "../investments";
+import { WalletAsset } from "../investments/dtos/base";
 import { ValidationsMap } from "./validations";
 
 export type FormId = string;
@@ -45,3 +47,9 @@ export type FormSchema<T extends FormMappable, TFormComplete = false> = {
 };
 
 export type ExtractSchema<T> = T extends FormSchema<infer TSchema> ? TSchema : never;
+
+// #interesting
+export type KeyofStoreAssets = keyof typeof initState;
+export type AssetPredicate<TAssetType extends keyof typeof initState> = (
+    asset: typeof initState[TAssetType] extends StoreAssetGroup<unknown, infer TWalletDto> ? TWalletDto : WalletAsset
+) => boolean;

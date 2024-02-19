@@ -45,10 +45,10 @@ const Investments = () => {
     const totalStocksValue = useMemo(() => {
         let total = 0;
 
-        stocks.walletBalance.forEach(({ amount, name }) => {
+        stocks.walletBalance.forEach(({ transactions, name }) => {
             const stocksTrends = stocks.marketPrices.find((stock) => stock.name === name);
             const latestPrice = stocksTrends?.seriesPrice.at(-1);
-            total += amount * (latestPrice?.value ?? 0);
+            total += (transactions.at(-1)?.balance ?? 0) * (latestPrice?.value ?? 0);
         });
 
         return { clean: total, formatted: numeral(total).format(FORMAT_AMOUNT) };
@@ -57,10 +57,10 @@ const Investments = () => {
     const totalGoldValue = useMemo(() => {
         let total = 0;
 
-        gold.walletBalance.forEach(({ amount, name }) => {
+        gold.walletBalance.forEach(({ transactions, name }) => {
             const goldTrends = gold.marketPrices.find((goldType) => goldType.name === name);
             const latestPrice = goldTrends?.seriesPrice.at(-1);
-            total += amount * (latestPrice?.value ?? 0);
+            total += (transactions.at(-1)?.balance ?? 0) * (latestPrice?.value ?? 0);
         });
 
         return { clean: total, formatted: numeral(total).format(FORMAT_AMOUNT) };
