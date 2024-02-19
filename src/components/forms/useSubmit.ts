@@ -51,8 +51,6 @@ function useSubmitForm<T extends FormSchema<FormMappable>>({ formId, submit }: R
                 setTimeout(res, 1500);
             });
             await submit(formSchema as FormSchema<ExtractSchema<T>, true>, { navigator, dispatch, notify: toast });
-            // # needs-improvement
-            dispatch(unregisterForm({ formId }));
         } catch (error) {
             if (error instanceof ErrorValidation) toast.error(error.message);
             else {
