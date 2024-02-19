@@ -180,6 +180,11 @@ const TabContentProperties = () => {
                             <ModalBuyAsset
                                 assetType="property"
                                 assetName={id}
+                                validateRange={{
+                                    min: 1,
+                                    max: 1,
+                                    errorMessage: 'Properties are sold 1 at a time'
+                                }}
                                 findAssetPredicate={(_asset) =>
                                     _asset.city === asset.city && asset.address === asset.address
                                 }

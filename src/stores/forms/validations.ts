@@ -12,7 +12,7 @@ export const validateEmail = ({ errorMessage = "Invalid email" }: ValidateEmailA
     if (!emailRegex.test(value)) throw new ErrorValidation(errorMessage);
 };
 
-type ValidateRangeArgs = { min?: number; max?: number; errorMessage: string };
+export type ValidateRangeArgs = { min?: number; max?: number; errorMessage: string };
 export const validateRange = ({ min, max, errorMessage }: ValidateRangeArgs) => (value: number) => {
     if (min && value < min) throw new ErrorValidation(errorMessage);
     if (max && value > max) throw new ErrorValidation(errorMessage);

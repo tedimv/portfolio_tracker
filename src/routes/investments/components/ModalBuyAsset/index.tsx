@@ -10,18 +10,21 @@ import Button from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { store } from "@/stores";
 import { thunkBuyAsset } from "@/stores/investments/thunks";
+import { ValidateRangeArgs } from "@/stores/forms/validations";
 
 type ModalBuyAssetProps<TAssetType extends KeyofStoreAssets> = {
     assetType: TAssetType;
     findAssetPredicate: AssetPredicate<TAssetType>;
     onClose: () => void;
     assetName: string;
+    validateRange?: ValidateRangeArgs;
 };
 function ModalBuyAsset<TAssetType extends KeyofStoreAssets>({
     assetType,
     findAssetPredicate,
     onClose,
     assetName,
+    validateRange,
 }: ModalBuyAssetProps<TAssetType>) {
     const schema = useFormSchema<{
         fields: {
@@ -39,7 +42,11 @@ function ModalBuyAsset<TAssetType extends KeyofStoreAssets>({
                     float: { precison: 3 },
                 },
                 validations: {
-                    validateRange: { min: 0.005, errorMessage: "Min purchasable amount is 0.005" },
+                    validateRange: {
+                        min: 0.005,
+                        errorMessage: "Min purchasable amount is 0.005",
+                        ...validateRange,
+                    },
                 },
             },
         },
