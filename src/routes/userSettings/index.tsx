@@ -15,6 +15,7 @@ import { updateUserData } from "@/stores/auth";
 
 const UserSettings = () => {
     const user = useAppSelector((state) => state.auth.user);
+    // #interesting
     const schema = useFormSchema<{
         /**
          * Passing a generic "T extends FormMappable" allows us to expand T into a type-safe schema for the fn argument
